@@ -31,7 +31,7 @@ myForm.appendChild(inputSubmit);
 searchContainer.appendChild(myForm);
 
 
-//test log ------------------------------------------------------------------------------------------------ <<<<  
+//test log
 console.log(searchContainer);
 
 
@@ -41,12 +41,23 @@ console.log(searchContainer);
 
 const gallery = document.getElementsByClassName("gallery")[0];
 
-// lets call the addToGallery function just to add some card elements to it x12
 
-for(let i = 0 ; i<12 ; i++)
-{
-    addToGallery();
-}
+
+// lets call the API information.
+
+fetch('https://randomuser.me/api/?results=12')
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        //console.log('data = ', data);
+        //information = data.results;
+        addToGallery(data.results);  // lets call our function to pass it the data and display 12 random elements
+        //console.log(data.results[0].gender);
+    })
+    .catch(error => console.log(error))
+
+
 
 
 
@@ -120,7 +131,7 @@ modalInfoContainer.appendChild(p5modal);
 modal.appendChild(button);
 modal.appendChild(modalInfoContainer);
 modalContainer.appendChild(modal);
-
+//modalContainer.style.visibility = "hidden"; // lets hide the modal container
 
 // append the modal container to the body
 const body = document.getElementsByTagName("body")[0];
@@ -131,50 +142,99 @@ body.appendChild(modalContainer);
 /// **********************************************************************  USEFUL FUNCTIONS 
 
 // this is a function that add a card element to the gallery
+function addToGallery(data){
 
-function addToGallery(){
+console.log(data[2].picture);
 
-        const cardElement = document.createElement("div");
-        cardElement.className = "card";
+for(let i = 0 ; i < data.length;i++)
+   {
+            const cardElement = document.createElement("div");
+            cardElement.className = "card";
 
-
-
-
-        const cardImage = document.createElement("div");
-        cardImage.className = "card-img-container";
-        const image = document.createElement("img");
-        image.className = "card-img";
-        image.src = "https://placehold.it/90x90";
-        image.alt = "profile picture";
-
-
-        cardImage.appendChild(image);
-
-
-        const cardinfo = document.createElement("div");
-        cardinfo.className = "card-info-container";
+      
 
 
 
-        const h3 = document.createElement("h3");
-        h3.className = "card-name";
-        h3.id = "name";
-        h3.textContent = "first last"
-        const p1 = document.createElement("p");
-        p1.className = "card-text";
-        p1.textContent="email"
-        const p2 = document.createElement("p");
-        p2.className = "card-text";
-        p2.textContent = "city, state";
 
-        cardinfo.appendChild(h3);
-        cardinfo.appendChild(p1);
-        cardinfo.appendChild(p2);
+            const cardImage = document.createElement("div");
+            cardImage.className = "card-img-container";
+            const image = document.createElement("img");
+            image.className = "card-img";
+            image.src = data[i].picture.thumbnail;
+            image.alt = "profile picture";
 
 
-        cardElement.appendChild(cardImage);
-        cardElement.appendChild(cardinfo);
-        gallery.appendChild(cardElement);
+            cardImage.appendChild(image);
 
 
+            const cardinfo = document.createElement("div");
+            cardinfo.className = "card-info-container";
+
+
+
+            const h3 = document.createElement("h3");
+            h3.className = "card-name";
+            h3.id = "name";
+            h3.textContent = data[i].name.first + " " + data[i].name.last;
+            const p1 = document.createElement("p");
+            p1.className = "card-text";
+            p1.textContent=data[i].email;
+            const p2 = document.createElement("p");
+            p2.className = "card-text";
+            p2.textContent = data[i].location.city + ", " + data[i].location.state;
+
+            cardinfo.appendChild(h3);
+            cardinfo.appendChild(p1);
+            cardinfo.appendChild(p2);
+
+
+            cardElement.appendChild(cardImage);
+            cardElement.appendChild(cardinfo);
+
+
+      //add the event listener to each card element in order to respond to a click over it!!
+      cardElement.addEventListener("click", function(e){
+            let nameToSearch = "";
+    
+
+
+            if(e.target.className === "card")
+            {
+                console.log   (e.target.children[1].children[0].textContent.split(" "));
+                nameToSearch = e.target.children[1].children[0].textContent.split(" ");
+                searchForThisOne(data,nameToSearch);
+                
+       
+
+            }
+            else
+            {
+                console.log("no");
+            }
+              console.log(e.target.children);
+          });
+
+
+
+          // add elements to gallery
+            gallery.appendChild(cardElement);
+
+    
+
+    }
+
+}
+
+function searchForThisOne(data,who)
+{
+
+    for(let i = 0 ; i < data.length;i++)
+    {
+        if(data[i].name.first === who[0] && data[i].name.last === who[1])
+        {
+            console.log(data[i].location.city);
+            p2modal.textContent =data[i].location.city;
+            imageModal.src = data[i].picture.medium;
+        }
+    }
 }
