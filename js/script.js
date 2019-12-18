@@ -31,8 +31,8 @@ myForm.appendChild(inputSubmit);
 searchContainer.appendChild(myForm);
 
 
-//test log
-console.log(searchContainer);
+
+
 
 
 
@@ -40,6 +40,7 @@ console.log(searchContainer);
 
 
 const gallery = document.getElementsByClassName("gallery")[0];
+
 
 
 
@@ -129,25 +130,38 @@ modalInfoContainer.appendChild(p5modal);
 
 
 modal.appendChild(button);
+
+// event to the button
+button.addEventListener("click", function(e){
+
+    ov.style.display ="none";
+});
+
+
 modal.appendChild(modalInfoContainer);
 modalContainer.appendChild(modal);
 //modalContainer.style.visibility = "hidden"; // lets hide the modal container
 
 // append the modal container to the body
 const body = document.getElementsByTagName("body")[0];
-body.appendChild(modalContainer);
 
-
+// create the overlay add it to the body and append to it the modalcontainer
+const ov = document.createElement("div");
+ov.id= "overlay";
+body.appendChild(ov);
+ov.appendChild(modalContainer);
 
 /// **********************************************************************  USEFUL FUNCTIONS 
 
 // this is a function that add a card element to the gallery
 function addToGallery(data){
 
-console.log(data[2].picture);
+
 
 for(let i = 0 ; i < data.length;i++)
    {
+            
+            
             const cardElement = document.createElement("div");
             cardElement.className = "card";
 
@@ -192,26 +206,24 @@ for(let i = 0 ; i < data.length;i++)
             cardElement.appendChild(cardinfo);
 
 
-      //add the event listener to each card element in order to respond to a click over it!!
-      cardElement.addEventListener("click", function(e){
+            //add the event listener to each card element in order to respond to a click over it!!
+            cardElement.addEventListener("click", function(e){
             let nameToSearch = "";
+            
+            // make visible the overlay
+            ov.style.display = "block";
+            
     
 
-
-            if(e.target.className === "card")
-            {
-                console.log   (e.target.children[1].children[0].textContent.split(" "));
-                nameToSearch = e.target.children[1].children[0].textContent.split(" ");
-                searchForThisOne(data,nameToSearch);
+           
+            
+            
+            // lets take the name and search for it in our array
+            nameToSearch = this.children[1].children[0].textContent.split(" ");
+            searchForThisOne(data,nameToSearch);
                 
-       
 
-            }
-            else
-            {
-                console.log("no");
-            }
-              console.log(e.target.children);
+            
           });
 
 
@@ -225,15 +237,21 @@ for(let i = 0 ; i < data.length;i++)
 
 }
 
+
+// this function search for the name clicked and feed the modal with the info associated to it
 function searchForThisOne(data,who)
 {
 
     for(let i = 0 ; i < data.length;i++)
     {
-        if(data[i].name.first === who[0] && data[i].name.last === who[1])
+        if(data[i].name.first === who[0] && data[i].name.last === who[1]  || data[i].name.first.includes(who[0]) && data[i].name.last.includes(who[1]) )
         {
-            console.log(data[i].location.city);
-            p2modal.textContent =data[i].location.city;
+            h3Modal.textContent = data[i].name.first +" "+ data[i].name.last;
+            p1modal.textContent = data[i].email;
+            p2modal.textContent = data[i].location.city +", "+data[i].location.state;
+            p3modal.textContent = data[i].cell;
+            p4modal.textContent = data[i].location.street.name +" "+data[i].location.street.number +" "+data[i].location.state +" "+ data[i].location.postcode;
+            p5modal.textContent = "Birthday : " + data[i].dob.date.substr(0,10);
             imageModal.src = data[i].picture.medium;
         }
     }
